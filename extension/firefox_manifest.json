@@ -1,22 +1,20 @@
 {
     "manifest_version": 2,
-    "name": "Moderator toolbox for reddit",
+    "name": "Toolbox for <insert website>",
     "author": "toolbox team",
     "short_name": "toolbox",
-    "description": "A set of tools to be used by moderators on reddit in order to make their jobs easier.",
-    "version": "6.1.4",
-    "version_name": "6.1.4: \"Delaying Donkey\"",
+    "description": "A set of tools to be used on <insert website>.",
+    "version": "0.0.1",
+    "version_name": "0.0.1: \"Prototyping Porcupine\"",
     "browser_specific_settings": {
         "gecko": {
-            "id": "yes@jetpack",
+            "id": "toolbox-tildes@jetpack",
             "strict_min_version": "57.0"
         }
     },
     "permissions": [
-        "https://*.reddit.com/",
-        "https://old.reddit.com/",
-        "https://oauth.reddit.com/",
-        "https://mod.reddit.com/",
+        "https://*.tildes.net/",
+        "https://tildes.net/",
         "cookies",
         "tabs",
         "storage",
@@ -41,18 +39,8 @@
             "run_at": "document_end",
             "all_frames": true,
             "matches": [
-                "https://*.reddit.com/*"
-            ],
-            "exclude_matches": [
-                "https://*.reddit.com/framedGild/*",
-                "https://*.reddit.com/framedModal/*",
-                "https://*.reddit.com/chat/*",
-                "https://*.reddit.com/account/sso/*",
-                "https://ads.reddit.com/*",
-                "https://*.reddit.com/*.json",
-                "https://*.reddit.com/*.json?*",
-                "https://*.reddit.com/*.json-html",
-                "https://*.reddit.com/*.json-html?*"
+                "https://*.tildes.net/*",
+                "https://tildes.net/*"
             ],
             "css": [
                 "data/styles/toolbox.css",

@@ -48,8 +48,10 @@ export function isConfigValidVersion (subreddit, config) {
 const manifest = browser.runtime.getManifest();
 const versionRegex = /(\d\d?)\.(\d\d?)\.(\d\d?).*?"(.*?)"/;
 const matchVersion = manifest.version_name.match(versionRegex);
+console.log(matchVersion);
 export const toolboxVersion = `${manifest.version}${betaRelease ? ' (beta)' : ''}`;
 export const toolboxVersionName = `${manifest.version_name}${betaRelease ? ' (beta)' : ''}`;
+console.log(`${matchVersion[1]}${matchVersion[2].padStart(2, '0')}${matchVersion[3].padStart(2, '0')}`);
 export const shortVersion = JSON.parse(`${matchVersion[1]}${matchVersion[2].padStart(2, '0')}${matchVersion[3].padStart(2, '0')}`);
 
 // Details about the current page
@@ -1262,66 +1264,25 @@ async function fetchModSubs (after, tries = 1) {
     }
 }
 
-// If devs are being fetched, stores a promise that will fulfill afterwards
-let devsFetchPromise = null;
-
 /**
- * Fetches the list of Toolbox developers from the /r/toolbox mod list. May
- * return a cached list or a static fallback if the API request fails.
- * @returns {Promise<Array<string>>}
+ * Returns the list of Toolbox developers
+ * @returns {<Array<string>>}
  */
-export async function getToolboxDevs () {
-    // Try to get from cache
-    const cachedDevs = await TBStorage.getSettingAsync('Utils', 'tbDevs', []);
-    if (cachedDevs && cachedDevs.length) {
-        return cachedDevs;
-    }
-
-    // Cache didn't work - get from API instead
-    // Check if we're already in the middle of fetching - if we are, we don't
-    // want to kick off the same process multiple times
-    if (!devsFetchPromise) {
-        // Start fetching and store a Promise of the process
-        devsFetchPromise = (async () => {
-            let devs;
-            try {
-                // Fetch the /r/toolbox mod list
-                const resp = await TBApi.getJSON('/r/toolbox/about/moderators.json');
-                TBStorage.purifyObject(resp);
-                devs = resp.data.children
-                // We only care about usernames
-                    .map(child => child.name)
-                // ignore automod
-                    .filter(dev => dev !== 'AutoModerator');
-            } catch (_) {
-                // Something went wrong, use a hardcoded fallback list
-                devs = [
-                    'agentlame',
-                    'creesch',
-                    'LowSociety ',
-                    'TheEnigmaBlade',
-                    'dakta',
-                    'largenocream',
-                    'psdtwk',
-                    'amici_ursi',
-                    'noeatnosleep',
-                    'Garethp',
-                    'WorseThanHipster',
-                    'eritbh',
-                ];
-            }
-
-            // Since we didn't find the devs in cache, update the cache
-            await TBStorage.setSettingAsync('Utils', 'tbDevs', devs);
-
-            // We're done fetching - unset the promise and return
-            devsFetchPromise = null;
-            return devs;
-        })();
-    }
-
-    // Return the promise that will fulfill once we've fetched the dev list
-    return devsFetchPromise;
+export function getToolboxDevs () {
+    return [
+        'agentlame',
+        'creesch',
+        'LowSociety ',
+        'TheEnigmaBlade',
+        'dakta',
+        'largenocream',
+        'psdtwk',
+        'amici_ursi',
+        'noeatnosleep',
+        'Garethp',
+        'WorseThanHipster',
+        'eritbh',
+    ];
 }
 
 // Listen to background page communication and act based on that.

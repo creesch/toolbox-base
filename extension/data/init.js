@@ -29,37 +29,11 @@ import * as TBStorage from './tbstorage.js';
 import {delay} from './tbhelpers.js';
 import TBModule from './tbmodule.js';
 import * as TBCore from './tbcore.js';
-import * as TBApi from './tbapi.js';
 import TBListener from './tblistener.js';
 
-import Devtools from './modules/devtools.js';
 import Support from './modules/support.js';
 import Modbar from './modules/modbar.js';
-import Config from './modules/config.js';
-import BetterButtons from './modules/betterbuttons.js';
-import DomainTagger from './modules/domaintagger.js';
-import ModMatrix from './modules/modmatrix.js';
-import ModNotes from './modules/modnotes.js';
-import Syntax from './modules/syntax.js';
-import ModButton from './modules/modbutton.js';
-import General from './modules/general.js';
-import Notifier from './modules/notifier.js';
-import Usernotes from './modules/usernotes.js';
-import Comment from './modules/comment.js';
-import NewModmailPro from './modules/newmodmailpro.js';
-import ModmailPro from './modules/modmailpro.js';
-import Macros from './modules/macros.js';
-import PersonalNotes from './modules/personalnotes.js';
-import HistoryButton from './modules/historybutton.js';
-import RemovalReasons from './modules/removalreasons.js';
-import NukeComments from './modules/nukecomments.js';
-import Troubleshooter from './modules/trouble.js';
-import Profile from './modules/profile.js';
-import QueueOverlay from './modules/queue_overlay.js';
-import FlyingSnoo from './modules/flyingsnoo.js';
-import QueueTools from './modules/queuetools.js';
-import Achievements from './modules/achievements.js';
-import OldReddit from './modules/oldreddit.js';
+import DemoModule from './modules/demomodule.js';
 
 /**
  * Checks for reset conditions. Promises `true` if settings are being reset and
@@ -107,22 +81,16 @@ async function checkReset () {
  * @returns {Promise<void>}
  */
 async function checkLoadConditions (tries = 3) {
-    let loggedinRedesign = false,
-        loggedinOld = false;
+    let loggedin = false;
 
     const $body = $('body');
 
     // Check for redesign
-    if ($body.find('#USER_DROPDOWN_ID').text() || $body.find('.BlueBar__account a.BlueBar__username').text() || $body.find('.Header__profile').length) {
-        loggedinRedesign = true;
+    if ($body.find('.logged-in-user-username').length) {
+        loggedin = true;
     }
 
-    // Check for old reddit
-    if ($body.find('form.logout input[name=uh]').val() || $body.find('.Header__profile').length || $body.hasClass('loggedin')) {
-        loggedinOld = true;
-    }
-
-    if (!loggedinOld && !loggedinRedesign) {
+    if (!loggedin) {
         if (tries < 1) {
             // We've tried a bunch of times and still don't have anything, so
             // assume there's no logged-in user
@@ -147,17 +115,6 @@ async function checkLoadConditions (tries = 3) {
     if ((typeof InstallTrigger !== 'undefined' || 'MozBoxSizing' in document.body.style) && browser.extension.inIncognitoContext) {
         throw new Error('Firefox is in Incognito mode, Toolbox will not work');
     }
-
-    // Check that we have details about the current user
-    const userDetails = await TBApi.getUserDetails();
-    if (!userDetails || userDetails.constructor !== Object || !Object.keys(userDetails).length) {
-        throw new Error('Failed to fetch user details');
-    }
-
-    // Write a setting and read back its value, if this fails something is wrong
-    if (await TBStorage.setSettingAsync('Utils', 'echoTest', 'echo') !== 'echo') {
-        throw new Error('Settings cannot be read/written');
-    }
 }
 
 /**
@@ -169,7 +126,7 @@ async function checkLoadConditions (tries = 3) {
 async function doSettingsUpdates () {
     const SETTINGS_NAME = 'Utils';
 
-    const currentUser = await TBApi.getCurrentUser();
+    const currentUser = $('body').find('.logged-in-user-username').text();
     let lastVersion = await TBCore.getLastVersion();
 
     const cacheName = await TBStorage.getCache('Utils', 'cacheName', '');
@@ -207,7 +164,6 @@ async function doSettingsUpdates () {
     if (TBCore.shortVersion > lastVersion) {
         // These need to happen for every version change
         await TBStorage.setSettingAsync(SETTINGS_NAME, 'lastVersion', TBCore.shortVersion); // set last version to this version.
-        TBCore.getToolboxDevs(); // always repopulate tb devs for each version change
 
         //* * This should be a per-release section of stuff we want to change in each update.  Like setting/converting data/etc.  It should always be removed before the next release. **//
 
@@ -269,19 +225,6 @@ async function doSettingsUpdates () {
     const $body = $('body');
     $body.addClass('mod-toolbox');
 
-    if (window.location.hostname === 'mod.reddit.com') {
-        $body.addClass('mod-toolbox-new-modmail');
-    }
-
-    // new profiles have some weird css going on. This remedies the weirdness...
-    window.addEventListener('TBNewPage', event => {
-        if (event.detail.pageType === 'userProfile') {
-            $body.addClass('mod-toolbox-profile');
-        } else {
-            $body.removeClass('mod-toolbox-profile');
-        }
-    });
-
     $('html').addClass('mod-toolbox-rd');
     $body.addClass('mod-toolbox-rd');
     // Bit hacky maybe but allows us more flexibility in specificity.
@@ -314,34 +257,9 @@ async function doSettingsUpdates () {
 
     // Load feature modules and register them
     for (const m of [
-        Devtools,
         Support,
         Modbar,
-        Config,
-        BetterButtons,
-        DomainTagger,
-        ModMatrix,
-        ModNotes,
-        Syntax,
-        ModButton,
-        General,
-        Notifier,
-        Usernotes,
-        Comment,
-        NewModmailPro,
-        ModmailPro,
-        Macros,
-        PersonalNotes,
-        HistoryButton,
-        RemovalReasons,
-        NukeComments,
-        Troubleshooter,
-        Profile,
-        QueueOverlay,
-        FlyingSnoo,
-        QueueTools,
-        Achievements,
-        OldReddit,
+        DemoModule,
     ]) {
         logger.debug('Registering module', m);
         TBModule.register_module(m);

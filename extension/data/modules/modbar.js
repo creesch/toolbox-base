@@ -112,27 +112,6 @@ export default new Module({
 }) {
     const $body = $('body');
 
-    // Footer element below the page so toolbox never should be in the way.
-    // Doing it like this because it means we don't have to mess with reddit css
-    const $footerblock = $('<div id="tb-footer-block">').appendTo($body);
-
-    // Don't add the mod bar to embedded pages or if not logged in
-    if (TBCore.isEmbedded || !await TBApi.getCurrentUser()) {
-        return;
-    }
-
-    // This prevents some weird scrollbar behavior on new reddit iframe embeds.
-    window.addEventListener('TBNewPage', event => {
-        const pageType = event.detail.pageType;
-        if (pageType === 'oldModmail' || pageType === 'message') {
-            $footerblock.hide();
-        } else {
-            $footerblock.show();
-            const {url} = getDirectingTo();
-            $('#tb-old-new-reddit-toggle').attr('href', url);
-        }
-    });
-
     //
     // preload some generic variables
     //

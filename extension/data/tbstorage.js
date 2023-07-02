@@ -82,51 +82,17 @@ initialLoadPromise.then(() => {
  */
 export const getAnonymizedSettings = () => new Promise(resolve => {
     settingsToObject(sObject => {
+
         // settings we delete
-        delete sObject['Toolbox.Achievements.lastSeen'];
-        delete sObject['Toolbox.Achievements.last_seen'];
-        delete sObject['Toolbox.Bagels.bagelType'];
-        delete sObject['Toolbox.Bagels.enabled'];
-        delete sObject['Toolbox.Modbar.customCSS'];
-        delete sObject['Toolbox.ModMail.lastVisited'];
-        delete sObject['Toolbox.ModMail.replied'];
-        delete sObject['Toolbox.ModMail.subredditColorSalt'];
-        delete sObject['Toolbox.Notifier.lastChecked'];
-        delete sObject['Toolbox.Notifier.lastSeenModmail'];
-        delete sObject['Toolbox.Notifier.lastSeenUnmoderated'];
-        delete sObject['Toolbox.Notifier.modmailCount'];
-        delete sObject['Toolbox.Notifier.modqueueCount'];
-        delete sObject['Toolbox.Notifier.modqueuePushed'];
-        delete sObject['Toolbox.Notifier.unmoderatedCount'];
-        delete sObject['Toolbox.Notifier.unreadMessageCount'];
-        delete sObject['Toolbox.Notifier.unreadPushed'];
-        delete sObject['Toolbox.QueueTools.kitteh'];
-        delete sObject['Toolbox.RReasons.customRemovalReason'];
-        delete sObject['Toolbox.Snoo.enabled'];
-        delete sObject['Toolbox.Storage.settings'];
-        delete sObject['Toolbox.Utils.echoTest'];
-        delete sObject['Toolbox.Utils.tbDevs'];
+        // Example: delete sObject['Toolbox.Achievements.lastSeen'];
+
 
         // these settings we want the length of the val.
-        sObject['Toolbox.Comments.highlighted'] = undefindedOrLength(sObject['Toolbox.Comments.highlighted']);
-        sObject['Toolbox.ModButton.savedSubs'] = undefindedOrLength(sObject['Toolbox.ModButton.savedSubs']);
-        sObject['Toolbox.ModMail.botsToFilter'] = undefindedOrLength(sObject['Toolbox.ModMail.botsToFilter']);
-        sObject['Toolbox.ModMail.filteredSubs'] = undefindedOrLength(sObject['Toolbox.ModMail.filteredSubs']);
-        sObject['Toolbox.Modbar.shortcuts'] = undefindedOrLength(sObject['Toolbox.Modbar.shortcuts']);
-        sObject['Toolbox.QueueTools.botCheckmark'] = undefindedOrLength(sObject['Toolbox.QueueTools.botCheckmark']);
-        sObject['Toolbox.Utils.seenNotes'] = undefindedOrLength(sObject['Toolbox.Utils.seenNotes']);
+        // Example: sObject['Toolbox.Comments.highlighted'] = undefindedOrLength(sObject['Toolbox.Comments.highlighted']);
+
 
         // these settings we just want to know if they are populated at all
-        sObject['Toolbox.Achievements.save'] = undefindedOrTrue(sObject['Toolbox.Achievements.save']);
-        sObject['Toolbox.ModButton.lastAction'] = undefindedOrTrue(sObject['Toolbox.ModButton.lastAction']);
-        sObject['Toolbox.Modbar.lastExport'] = undefindedOrTrue(sObject['Toolbox.Modbar.lastExport']);
-        sObject['Toolbox.Notifier.modSubreddits'] = undefindedOrTrue(sObject['Toolbox.Notifier.modSubreddits']);
-        sObject['Toolbox.Notifier.modmailSubreddits'] = undefindedOrTrue(sObject['Toolbox.Notifier.modmailSubreddits']);
-        sObject['Toolbox.Notifier.unmoderatedSubreddits'] = undefindedOrTrue(sObject['Toolbox.Notifier.unmoderatedSubreddits']);
-        sObject['Toolbox.PNotes.noteWiki'] = undefindedOrTrue(sObject['Toolbox.PNotes.noteWiki']);
-        sObject['Toolbox.QueueTools.queueCreature'] = undefindedOrTrue(sObject['Toolbox.QueueTools.queueCreature']);
-        sObject['Toolbox.QueueTools.subredditColorSalt'] = undefindedOrTrue(sObject['Toolbox.QueueTools.subredditColorSalt']);
-        sObject['Toolbox.Utils.settingSub'] = undefindedOrTrue(sObject['Toolbox.Utils.settingSub']);
+        // Example: sObject['Toolbox.Achievements.save'] = undefindedOrTrue(sObject['Toolbox.Achievements.save']);
 
         resolve(sObject);
 
@@ -156,8 +122,8 @@ export async function clearCache () {
     });
 }
 
-// The below block of code will keep watch for events that require clearing the cache like account switching and people accepting mod invites.
-$('body').on('click', '#RESAccountSwitcherDropdown .accountName, #header-bottom-right .logout, .toggle.moderator .option', () => {
+// The below block of code will keep watch for events that require clearing the cache like account switching.
+$('body').on('click', 'form[action="/logout"] button[type="submit"]', () => {
     clearCache();
 });
 
